@@ -31,15 +31,17 @@ jobs:
         with:
           r-version: '4.4'
 
-      - name: Install shinylive
-        run: |
-          Rscript -e "install.packages('shinylive', repos='https://cran.rstudio.com/')"
-
       - name: Export Shiny app
         run: |
           mkdir -p app
           cp app.R app/
-          Rscript -e "library(shinylive); shinylive::export('app', 'docs')"
+          Rscript -e "
+            if (!requireNamespace('shinylive', quietly = TRUE)) {
+              install.packages('shinylive', repos='https://cran.rstudio.com/')
+            }
+            library(shinylive)
+            shinylive::export('app', 'docs')
+          "
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
