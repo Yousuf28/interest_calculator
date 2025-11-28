@@ -2,6 +2,8 @@
 
 An interactive R Shiny web application for calculating and comparing car loan interest rates. This app allows users to input different loan amounts and terms, then generates detailed comparison tables showing monthly payments, total interest, and cost differences across various APR rates (0% to 6%).
 
+**🌐 Live App**: [https://yousuf28.github.io/interest_calculator/](https://yousuf28.github.io/interest_calculator/)
+
 ## Features
 
 - **Interactive Input**: Adjust loan amount and term (months) in real-time
@@ -33,23 +35,25 @@ cd interest_rate
 
 2. Install required R packages:
 ```r
-install.packages(c("shiny", "DT"))
+install.packages(c("shiny", "DT", "shinylive"))
 ```
+
+**Note**: The source app is located in the `myapp/` directory. The `docs/` directory contains the exported shinylive version for GitHub Pages.
 
 ## Running Locally
 
 ### Method 1: Using RStudio
-1. Open `app.R` in RStudio
+1. Open `myapp/app.R` in RStudio
 2. Click the "Run App" button
 
 ### Method 2: Using R Command Line
 ```r
-shiny::runApp("app.R")
+shiny::runApp("myapp")
 ```
 
 ### Method 3: Using Rscript
 ```bash
-Rscript -e "shiny::runApp('app.R')"
+Rscript -e "shiny::runApp('myapp')"
 ```
 
 The app will open in your default web browser, typically at `http://127.0.0.1:XXXX` (where XXXX is a random port).
@@ -76,28 +80,18 @@ The app will open in your default web browser, typically at `http://127.0.0.1:XX
 
 ```
 interest_rate/
-├── app.R                    # Main Shiny application
-├── app/                     # App directory (for shinylive export)
-│   └── app.R               # Copy of app.R
+├── myapp/                   # Shiny app directory (source files)
+│   └── app.R               # Main Shiny application
 ├── docs/                    # Exported shinylive app (for GitHub Pages)
 │   ├── index.html          # Main HTML file
 │   ├── app.json            # App code
 │   └── shinylive/          # Shinylive web assets
-├── car_loan_calculator.R    # Standalone R script (generates PDF)
-├── car_loan_analysis.pdf    # Sample output PDF
-├── README.md                # This file
-├── DEPLOY.md                # Detailed deployment guide
-├── shinylive-deploy.R       # Helper script for shinylive export
-├── deploy.R                 # General deployment helper
-├── DESCRIPTION              # R package description
-├── requirements.txt         # Python-style requirements (for reference)
-├── manifest.json            # Web app manifest
-├── webr-example.html        # WebR client-side example
-├── .github/
-│   └── workflows/
-│       └── deploy.yml       # GitHub Actions workflow for auto-deployment
-└── .gitignore              # Git ignore file
+├── car_loan_calculator.R  # Standalone R script (generates PDF)
+├── car_loan_analysis.pdf   # Sample output PDF
+└── README.md               # This file
 ```
+
+**Note**: The `myapp/` directory contains the source Shiny app, and `docs/` contains the exported shinylive version that runs on GitHub Pages.
 
 ## Functions
 
@@ -119,37 +113,25 @@ The app is modularized with the following key functions:
 
 ## Deployment
 
-### Option 1: GitHub Pages with Shinylive (Recommended - No Server Required!)
+### GitHub Pages with Shinylive (No Server Required!)
 
-This app is set up to deploy to GitHub Pages using **Shinylive**, which runs Shiny apps entirely in the browser without any server!
+This app is deployed to GitHub Pages using **Shinylive**, which runs Shiny apps entirely in the browser without any server!
 
 **Live App**: https://yousuf28.github.io/interest_calculator/
 
-#### Automatic Deployment (GitHub Actions)
+#### How It Works
 
-The repository includes a GitHub Actions workflow that automatically:
-1. Exports your Shiny app using shinylive
-2. Deploys it to GitHub Pages
+The repository contains:
+- `myapp/` - Source Shiny application files
+- `docs/` - Exported shinylive version (deployed to GitHub Pages)
 
-**To enable:**
-1. **Add necessary files to git**:
-```bash
-git add app.R .github/workflows/deploy.yml README.md
-git commit -m "Setup shinylive deployment"
-git push origin main
-```
+GitHub Pages is configured to serve the `docs/` folder, which contains the browser-ready version of the app.
 
-2. Go to your repository Settings → Pages
-3. Set Source to "GitHub Actions"
-4. The workflow will run automatically on every push to main/master
+#### Updating the Deployed App
 
-**Note**: With automatic deployment, you don't need to commit the `docs/` folder - GitHub Actions generates it automatically. See [GIT_FILES.md](GIT_FILES.md) for a complete list of files to add.
+When you make changes to the app in `myapp/`:
 
-#### Manual Deployment
-
-If you want to deploy manually:
-
-1. **Install shinylive**:
+1. **Install shinylive** (if not already installed):
 ```r
 install.packages("shinylive")
 ```
@@ -157,32 +139,34 @@ install.packages("shinylive")
 2. **Export the app**:
 ```r
 library(shinylive)
-# Create app directory
-dir.create("app", showWarnings = FALSE)
-file.copy("app.R", "app/app.R")
-# Export to docs directory
-shinylive::export("app", "docs")
+shinylive::export("myapp", "docs")
 ```
 
-3. **Commit and push**:
+3. **Commit and push the updated docs folder**:
 ```bash
-git add app.R docs/ README.md
-git commit -m "Deploy shinylive app"
-git push
+git add docs/
+git commit -m "Update deployed app"
+git push origin main
 ```
 
-4. **Enable GitHub Pages**:
-   - Go to repository Settings → Pages
-   - Set Source to "Deploy from a branch"
-   - Select branch: `main` or `master`
-   - Select folder: `/docs`
-   - Click Save
+4. **GitHub Pages will automatically update** (may take a few minutes)
+
+#### Initial GitHub Pages Setup
+
+If you haven't set up GitHub Pages yet:
+
+1. Go to your repository on GitHub
+2. Navigate to **Settings** → **Pages**
+3. Under "Source", select **"Deploy from a branch"**
+4. Select branch: `main` (or `master`)
+5. Select folder: `/docs`
+6. Click **Save**
 
 Your app will be available at: `https://YOUR_USERNAME.github.io/interest_calculator/`
 
-**Note**: See [GIT_FILES.md](GIT_FILES.md) for a complete guide on which files to add to git.
+### Alternative Deployment Options
 
-### Option 2: shinyapps.io
+#### Option 1: shinyapps.io
 
 1. Install `rsconnect`:
 ```r
@@ -197,11 +181,11 @@ library(rsconnect)
 rsconnect::deployApp(appDir = ".", appName = "car-loan-calculator")
 ```
 
-### Option 3: Shiny Server
+#### Option 2: Shiny Server
 
-If you have access to a Shiny Server, place the app in the server's app directory.
+If you have access to a Shiny Server, place the `myapp/` directory in the server's app directory.
 
-### Option 4: Docker
+#### Option 3: Docker
 
 See [DEPLOY.md](DEPLOY.md) for Docker deployment instructions.
 
