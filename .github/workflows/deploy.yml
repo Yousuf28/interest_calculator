@@ -1,11 +1,7 @@
 name: Deploy Shinylive App to GitHub Pages
 
 on:
-  push:
-    branches:
-      - main
-      - master
-  workflow_dispatch:
+  workflow_dispatch:   # manual trigger only
 
 permissions:
   contents: read
@@ -59,4 +55,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
